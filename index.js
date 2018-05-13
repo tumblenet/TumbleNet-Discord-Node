@@ -1,7 +1,8 @@
 const webserverlog = require('webserver-log');
 
-const discordbot = require('./discordbot.js');
+const discordteken = process.env.DISCORD_TOKEN
+ || require('./discordbot.js').token;
 
 const config = require('./config/token.js');
 
-discordbot.login(process.env.DISCORD_TOKEN || config.token);
+discordbot.login(discordtoken);
