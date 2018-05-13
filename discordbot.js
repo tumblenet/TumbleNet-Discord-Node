@@ -71,6 +71,7 @@ registerCommand("invite", function (message,param) {
 client.on('ready', () => {
   console.log('I am ready!');
   client.guilds.forEach(guild =>{
+    guild.me.setNickname("Tumble Network");
     registerServer(guild);
   });
 });
@@ -103,6 +104,7 @@ client.on('message', message => {
 });
 
 client.on('guildCreate', guild => {
+  guild.me.setNickname("Tumble Network");
   registerServer(guild);
 });
 
