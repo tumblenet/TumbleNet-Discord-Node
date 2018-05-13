@@ -64,6 +64,10 @@ registerCommand("commands", function (message, param) {
   }
 });
 
+registerCommand("invite", function (message,param) {
+  message.channel.send("Invite me to your server: https://discordapp.com/api/oauth2/authorize?client_id=445218393163825152&permissions=0&scope=bot")
+})
+
 client.on('ready', () => {
   console.log('I am ready!');
   client.guilds.forEach(guild =>{
