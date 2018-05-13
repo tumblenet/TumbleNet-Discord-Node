@@ -1,0 +1,16 @@
+{
+  "name": "tumblenet-discord-node",
+  "version": "1.0.0",
+  "description": "bot for discord",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "tumble1999",
+  "license": "ISC",
+  "repository": "tumblenet/TumbleNet-Discord-Node",
+  "dependencies": {
+    "discord.js": "^11.3.2",
+    "webserver-log": "github:tumblenet/webserver-log"
+  }
+}
