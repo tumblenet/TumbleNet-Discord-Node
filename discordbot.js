@@ -66,7 +66,15 @@ registerCommand("commands", function (message, param) {
 
 registerCommand("invite", function (message,param) {
   message.channel.send("Invite me to your server: https://discordapp.com/api/oauth2/authorize?client_id=445218393163825152&permissions=0&scope=bot")
-})
+});
+
+registerCommand("setPrefix", function (message,param) {
+  getServer(message.guild.id,function (server) {
+    message.channel.send("setting prefix...");
+    server.setPrefix(param.shift().charAt(0));
+    message.channel.send("Server prefix changed from " + server.oldprefix + " to " + server.prefix);
+  });
+});
 
 client.on('ready', () => {
   console.log('I am ready!');
@@ -78,15 +86,16 @@ client.on('ready', () => {
 
 client.on('message', message => {
   getServer(message.guild.id,function (server) {
+    if (message.content.charAt(0) == server.oldprefix) {
+      message.channel.send("Server prefix changed from " + server.oldprefix + " to " + server.prefix);
+    }
     if (message.content.charAt(0) == server.prefix) {
-      message.channel.startTyping();
       var commandWorked = false;
 
       var callback = function () {
         if (!commandWorked) {
           message.channel.send("Invalid command")
         }
-        message.channel.stopTyping();
       }
       var itemsProcessed = 0;
       discordcommands.forEach((command,index,array) => {
