@@ -7,6 +7,7 @@ const DiscordCommand = DiscordOBJ("command");
 
 var discordServers = [];
 var discordcommands = [];
+var quizmaster;
 
 function registerServer(server){
   discordServers.push(new DiscordServer(server.id,server.name));
@@ -85,16 +86,20 @@ client.on('ready', () => {
 });
 
 client.on('message', message => {
+  if (message.member == message.guild.me) {
+    return;
+  }
   getServer(message.guild.id,function (server) {
+    message.delete();
     if (message.content.charAt(0) == server.oldprefix) {
       message.channel.send("Server prefix changed from " + server.oldprefix + " to " + server.prefix);
     }
     if (message.content.charAt(0) == server.prefix) {
       var commandWorked = false;
 
-      var callback = function () {
+      var callback = function (command) {
         if (!commandWorked) {
-          message.channel.send("Invalid command")
+          message.channel.send("Invalid command: `" + command + "`")
         }
       }
       var itemsProcessed = 0;
@@ -105,11 +110,12 @@ client.on('message', message => {
         commandWorked = commandWorked || command.execute(message);
         itemsProcessed++;
         if(itemsProcessed === array.length) {
-          callback();
+          callback(message.content);
         }
       });
     }
   });
+  message.addReaction(":yum:");
 });
 
 client.on('guildCreate', guild => {
