@@ -5,15 +5,17 @@ const DiscordOBJ = require('./discordobj');
 const DiscordServer = DiscordOBJ("server");
 const DiscordCommand = DiscordOBJ("command");
 
+const MAINTENANCE = false;
+
 var discordServers = [];
-var discordcommands = [];
+var discordCommands = [];
 var quizmaster;
 
 function registerServer(server){
   discordServers.push(new DiscordServer(server.id,server.name));
 }
 function registerCommand(alias,cmdevent){
-  discordcommands.push(new DiscordCommand(alias,cmdevent));
+  discordCommands.push(new DiscordCommand(alias,cmdevent));
 }
 
 function getServer(guildID, callback){
@@ -35,14 +37,24 @@ registerCommand("servers",function (message, param) {
 });
 
 registerCommand("say", function (message, param) {
-  message.channel.send(param.join(" "));
+  console.log(message);
+  var files = message.attachments.map(x=>x.url);
+  message.delete();
+  var messageOptions = {
+    tts:message.tts,
+    nonce:message.nounce,
+    embed:message.embeds,
+    files:files,
+    split:true
+  }
+  message.channel.send(param.join(" "),messageOptions);
 });
 
 registerCommand("commands", function (message, param) {
   switch (param.shift()) {
     case "list":
       message.channel.send("**Commands**");
-      discordcommands.forEach((command,index,array) => {
+      discordCommands.forEach((command,index,array) => {
         message.channel.send("* " + command.alias[0]);
       });
       break;
@@ -90,11 +102,15 @@ client.on('message', message => {
     return;
   }
   getServer(message.guild.id,function (server) {
-    message.delete();
+
     if (message.content.charAt(0) == server.oldprefix) {
       message.channel.send("Server prefix changed from " + server.oldprefix + " to " + server.prefix);
     }
     if (message.content.charAt(0) == server.prefix) {
+      if (MAINTENANCE) {
+        message.reply("Sorry, I am under maintenance at the moment. Please ask <@336869008148135948> for more details.");
+        return;
+      }
       var commandWorked = false;
 
       var callback = function (command) {
@@ -102,12 +118,25 @@ client.on('message', message => {
           message.channel.send("Invalid command: `" + command + "`")
         }
       }
+      function commandExecuter(command,message) {
+        var output = false;
+        try {
+          output = command.execute(message);
+        } catch (e) {
+          //output = false;
+        console.log(e);
+        } finally {
+
+        }
+        return output;
+      }
+
       var itemsProcessed = 0;
-      discordcommands.forEach((command,index,array) => {
+      discordCommands.forEach((command,index,array) => {
         if (commandWorked) {
           return;
         }
-        commandWorked = commandWorked || command.execute(message);
+        commandWorked = commandWorked || commandExecuter(command,message);
         itemsProcessed++;
         if(itemsProcessed === array.length) {
           callback(message.content);
