@@ -115,7 +115,6 @@ client.on('message', message => {
       });
     }
   });
-  message.addReaction(":yum:");
 });
 
 client.on('guildCreate', guild => {
