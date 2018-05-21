@@ -8,7 +8,8 @@ const MAINTENANCE = false;
 const OWNER_ID = "336869008148135948";
 const COMMAND_PREFIX = "!";
 const ALLOWED_GUILDS = ["337887798889545728","446981442443149312","379672971112873984"];
-const INTERVIEW_CATEGORY = "447858657732853760";
+const INTERVIEW_CATEGORY = "437378162658115585";
+const INTERVIEW_ROLE = "447921996672794645";
 
 var discordCommands = [];
 
@@ -68,6 +69,10 @@ registerCommand("help", function (message, param) {
 });
 
 registerCommand("interview", (message, param) => {
+  if (message.user.roles.map(x=>x.id).includes(INTERVIEW_ROLE)) {
+    message.reply("Only interviewers can run this command");
+    return;
+  }
   var user = message.mentions.users.first(1)[0];
   var roles = message.mentions.roles;
   message.reply("This would open and interview for " + user.tag + ", appying for " + roles.map(x=>x.name).join(", "));
@@ -79,6 +84,10 @@ registerCommand("interview", (message, param) => {
 });
 
 registerCommand("accept", (message, param) => {
+  if (message.user.roles.map(x=>x.id).includes(INTERVIEW_ROLE)) {
+    message.reply("Only interviewers can run this command");
+    return;
+  }
   if (message.channel.parent.id != INTERVIEW_CATEGORY) {
     message.reply("This is not an interview");
     return;
@@ -109,6 +118,10 @@ registerCommand("accept", (message, param) => {
 });
 
 registerCommand("deny", (message, param) => {
+  if (message.user.roles.map(x=>x.id).includes(INTERVIEW_ROLE)) {
+    message.reply("Only interviewers can run this command");
+    return;
+  }
   if (message.channel.parent.id != INTERVIEW_CATEGORY) {
     message.reply("This is not an interview");
     return;
