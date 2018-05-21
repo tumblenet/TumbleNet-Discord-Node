@@ -5,7 +5,7 @@ const DiscordOBJ = require('./discordobj');
 const DiscordCommand = DiscordOBJ("command");
 
 const MAINTENANCE = false;
-const ME_ID = undefined;
+var ME_ID = undefined;
 const OWNER_ID = "336869008148135948";
 const COMMAND_PREFIX = "!";
 const ALLOWED_GUILDS = ["337887798889545728","446981442443149312","379672971112873984"];
