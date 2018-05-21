@@ -69,7 +69,7 @@ registerCommand("help", function (message, param) {
 });
 
 registerCommand("interview", (message, param) => {
-  if (message.user.roles.map(x=>x.id).includes(INTERVIEW_ROLE)) {
+  if (message.member.roles.map(x=>x.id).includes(INTERVIEW_ROLE)) {
     message.reply("Only interviewers can run this command");
     return;
   }
@@ -84,7 +84,7 @@ registerCommand("interview", (message, param) => {
 });
 
 registerCommand("accept", (message, param) => {
-  if (message.user.roles.map(x=>x.id).includes(INTERVIEW_ROLE)) {
+  if (message.member.roles.map(x=>x.id).includes(INTERVIEW_ROLE)) {
     message.reply("Only interviewers can run this command");
     return;
   }
@@ -98,7 +98,7 @@ registerCommand("accept", (message, param) => {
     return;
   }
   var roleAcceped = message.mentions.roles.first(1)[0];
-  if (interview.roles.length > 1 && roleAcceped == undefined) {
+  if (interview.member.length > 1 && roleAcceped == undefined) {
     message.reply("In this case you need to specify the role between: " + roles.map(x=>x.name).join(", "));
     return;
   }
