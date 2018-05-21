@@ -8,8 +8,13 @@ const MAINTENANCE = false;
 const OWNER_ID = "336869008148135948";
 const COMMAND_PREFIX = "!";
 const ALLOWED_GUILDS = ["337887798889545728","446981442443149312","379672971112873984"];
-const INTERVIEW_CATEGORY = "437378162658115585";
-const INTERVIEW_ROLE = "447921996672794645";
+const GUILD = {
+  TUMBLE_NETWORK:0,
+  TUMBLES_BOTS:1,
+  DISCORD_TESTING:2
+}
+const INTERVIEW_CATEGORY = ["437378162658115585","447858657732853760","447842208591118336"];
+const INTERVIEW_ROLE = ["447921996672794645","",""];
 
 var discordCommands = [];
 
@@ -69,7 +74,8 @@ registerCommand("help", function (message, param) {
 });
 
 registerCommand("interview", (message, param) => {
-  if (message.member.roles.map(x=>x.id).includes(INTERVIEW_ROLE)) {
+  guildType = ALLOWED_GUILDS.indexOf(message.guild.id);
+  if (INTERVIEW_ROLE[guildType] != "" && message.member.roles.map(x=>x.id).includes(INTERVIEW_ROLE[guildType])) {
     message.reply("Only interviewers can run this command");
     return;
   }
@@ -78,17 +84,18 @@ registerCommand("interview", (message, param) => {
   message.reply("This would open and interview for " + user.tag + ", appying for " + roles.map(x=>x.name).join(", "));
   message.guild.createChannel(user.tag,"text").then(channel=>{
     user.send("Thanks for your application to TumbleCraft or Tumble Network. We were impressed by your background and would like to invite you to interview in this channel (" + channel.toString() + ") to tell you a little more about the (" + roles.map(x=>x.name).join(", ") + ") position and get to know you better.");
-    channel.setParent(INTERVIEW_CATEGORY);
+    channel.setParent(INTERVIEW_CATEGORY[guildType]);
     channel.setTopic("Applying for " + roles.map(x=>x.name).join(", ") + " | " + user.id + ":" + roles.map(x=>x.id).join(":"));
   }).catch(console.error);
 });
 
 registerCommand("accept", (message, param) => {
-  if (message.member.roles.map(x=>x.id).includes(INTERVIEW_ROLE)) {
+  guildType = ALLOWED_GUILDS.indexOf(message.guild.id);
+  if (message.member.roles.map(x=>x.id).includes(INTERVIEW_ROLE[guildType])) {
     message.reply("Only interviewers can run this command");
     return;
   }
-  if (message.channel.parent.id != INTERVIEW_CATEGORY) {
+  if (message.channel.parent.id != INTERVIEW_CATEGORY[guildType]) {
     message.reply("This is not an interview");
     return;
   }
@@ -98,7 +105,7 @@ registerCommand("accept", (message, param) => {
     return;
   }
   var roleAcceped = message.mentions.roles.first(1)[0];
-  if (interview.member.length > 1 && roleAcceped == undefined) {
+  if (interview.roles.length > 1 && roleAcceped == undefined) {
     message.reply("In this case you need to specify the role between: " + roles.map(x=>x.name).join(", "));
     return;
   }
@@ -118,11 +125,12 @@ registerCommand("accept", (message, param) => {
 });
 
 registerCommand("deny", (message, param) => {
-  if (message.user.roles.map(x=>x.id).includes(INTERVIEW_ROLE)) {
+  guildType = ALLOWED_GUILDS.indexOf(message.guild.id);
+  if (message.member.roles.map(x=>x.id).includes(INTERVIEW_ROLE[guildType])) {
     message.reply("Only interviewers can run this command");
     return;
   }
-  if (message.channel.parent.id != INTERVIEW_CATEGORY) {
+  if (message.channel.parent.id != INTERVIEW_CATEGORY[guildType]) {
     message.reply("This is not an interview");
     return;
   }
