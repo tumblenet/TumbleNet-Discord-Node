@@ -28,6 +28,7 @@ DiscordCommand.prototype.execute = function (message) {
   }
   if (this.alias.includes(usercommand[0].substr(1))) {
     usercommand.shift();
+
     this.cmdevent(message, usercommand);
     return true;
   }
