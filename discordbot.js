@@ -3,6 +3,7 @@ const client = new Discord.Client();
 
 const DiscordOBJ = require('./discordobj');
 const DiscordCommand = DiscordOBJ("command");
+const Log = require('./Log.js');
 
 const MAINTENANCE = false;
 var ME_ID = undefined;
@@ -119,6 +120,7 @@ registerCommand("interview", (message, param) => {
     channel.overwritePermissions(user, {
       VIEW_CHANNEL: true
     });
+    Log.SendUpdate(message.guild,"Interview for " + user.toString() + ", applying for " + roles.map(x=>x.toString()).join(", ") + ", has been opened: " + channel.toString(),user,role.first(1)[0]);
   }).catch(console.error);
 });
 
@@ -150,10 +152,12 @@ registerCommand("accept", (message, param) => {
     message.channel.setTopic("Applying for " + interview.roles.map(x=>x.name).join(", ") + " | " + interview.user.id + ":" + interview.roles.map(x=>x.id).join(":"));
   } else {
     roleAcceped = interview.roles[0];
+    Log.SendUpdate(message.guild,"Interview for " + interview.user.user.toString() + ", applying for " + interview.roles.map(x=>x.toString()).join(", ") + ", has been closed: " + message.channel.toString(),interview.user, interview.roles[0]);
     message.channel.delete();
   }
   interview.user.send("Your application for " + roleAcceped.name + " has been accepted. Welcome to the team. https://discord.gg/EJ4TjaK");
   message.member.send("You have accepted " + interview.user.displayName + " as a " + roleAcceped.name);
+  Log.SendUpdate(message.guild,"Application for " + interview.user.user.toString() + ", applying for " + roleAcceped.toString() + ", has been accepted:", interview.user, roleAcceped);
   interview.user.addRole(roleAcceped.id);
   interview.user.removeRole(INTERVIEWEE_ROLE[guildType]);
   if (STAFF_ROLES[guildType].includes(roleAcceped)) {
@@ -193,11 +197,13 @@ registerCommand("deny", (message, param) => {
     message.channel.setTopic("Applying for " + interview.roles.map(x=>x.name).join(", ") + " | " + interview.user.id + ":" + interview.roles.map(x=>x.id).join(":"));
   } else {
     roleDenyed = interview.roles[0];
+    Log.SendUpdate(message.guild,"Interview for " + interview.user.user.toString() + ", applying for " + interview.roles.map(x=>x.toString()).join(", ") + ", has been closed: " + message.channel.toString(),interview.user,interview.roles[0]);
     message.channel.delete();
   }
   interview.user.removeRole(INTERVIEWEE_ROLE[guildType]);
   interview.user.send("We are sorry, your application for **" + roleDenyed.name + "** has unfortunately been denied. Thank you for your interest, and enjoy the server.");
   message.member.send("You have denied " + interview.user.toString() + " as a **" + roleDenyed.name + "**");
+  Log.SendUpdate(message.guild,"Application for " + interview.user.user.toString() + ", applying for " + roleDenyed.toString() + ", has been denied",interview.user,roleDenyed);
 });
 
 client.on('ready', () => {
@@ -224,6 +230,7 @@ client.on('message', message => {
       "I only have #REPLIES_NUM# phases i could say here, stop trying to run <@" + OWNER_ID + "> dry of random replies.",
       "*Message from owner (<@" + OWNER_ID + ">):* Stop making my bot say all of these phases, Im not coming up with anymore."
     ]
+      Log.SendUpdate(client.guilds.get(ALLOWED_GUILDS[GUILD.TUMBLE_NETWORK]),message.content,message.user,undefined,"Somone attempted to DM me.");
     replies = replies.map(x=>x.replace("#REPLIES_NUM#", replies.length));
 
     message.reply(replies[Math.floor(Math.random() * replies.length)])
