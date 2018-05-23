@@ -252,21 +252,21 @@ client.on('message', message => {
   if (message.member == message.guild.me) {
     return;
   }
-  if (message.channel.id == TimeZones.WHAT_TIME_ID) {
-    try {
-      //TimeZones.GetTimeZone(message);
-    } catch (e) {
-      message.reply({
-        embed:{
-          description:"" + e
-        }
-      })
-    } finally {
-
-    }
-    message.delete();
-    return;
-  }
+  // if (message.channel.id == TimeZones.WHAT_TIME_ID) {
+  //   try {
+  //     //TimeZones.GetTimeZone(message);
+  //   } catch (e) {
+  //     message.reply({
+  //       embed:{
+  //         description:"" + e
+  //       }
+  //     })
+  //   } finally {
+  //
+  //   }
+  //   message.delete();
+  //   return;
+  // }
   if (message.content.charAt(0) == COMMAND_PREFIX) {
     if (MAINTENANCE) {
       message.reply("Sorry, I am under maintenance at the moment. Please ask <@336869008148135948> for more details.");
