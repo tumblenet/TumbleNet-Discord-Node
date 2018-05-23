@@ -5,20 +5,22 @@ const DiscordOBJ = require('./discordobj');
 const DiscordCommand = DiscordOBJ("command");
 const Log = require('./Log.js');
 
+//const TimeZones = require("./timezones.js");
+
 const MAINTENANCE = false;
 var ME_ID = undefined;
 const OWNER_ID = "336869008148135948";
-const COMMAND_PREFIX = "!";
-const ALLOWED_GUILDS = ["337887798889545728","446981442443149312","379672971112873984"];
+const COMMAND_PREFIX = "/";
+const ALLOWED_GUILDS = ["337887798889545728","446981442443149312","379672971112873984","441158487939088385"];
 const GUILD = {
   TUMBLE_NETWORK:0,
   TUMBLES_BOTS:1,
   DISCORD_TESTING:2
 }
-const INTERVIEW_CATEGORY = ["437378162658115585","447858657732853760","447842208591118336"];
-const INTERVIEWER_ROLE = ["447045670126485505","","448161562923106305"];
-const INTERVIEWEE_ROLE = ["447050858866278402","","448187974312525838"];
-const STAFF_ROLES = [[
+const INTERVIEW_CATEGORY = "437378162658115585";
+const INTERVIEWER_ROLE = "447045670126485505";
+const INTERVIEWEE_ROLE = "447050858866278402";
+const STAFF_ROLES = [
   "447054701662568479",//@TumbleNetwork Team
   "447048339179962373",//Builder
   "447048289326727177",//World Painter
@@ -27,12 +29,13 @@ const STAFF_ROLES = [[
   "447049362674024458",//Developer
   "447044657877090304",//Admin
   "447044714110255114",//Mod
+  "448415984106078218",//Jr Mod
   "447047765667872768",//Helper
   "447054255606726686",//Journalist
   "447048353063370763",//SupportTeam
   "447045670126485505",//Interviewer
-],[],[],[]];
-const STAFF_ROLE = ["447046714512375819","",""]
+];
+const STAFF_ROLE = "447046714512375819";
 
 var discordCommands = [];
 
@@ -93,9 +96,12 @@ registerCommand("help", function (message, param) {
 
 registerCommand("interview", (message, param) => {
   var guildType = ALLOWED_GUILDS.indexOf(message.guild.id);
-  console.log("iNTERVIEW rOLE: " + INTERVIEWER_ROLE[guildType]);
+  if (guildType != GUILD.TUMBLE_NETWORK) {
+    return;
+  }
+  console.log("iNTERVIEW rOLE: " + INTERVIEWER_ROLE);
 
-  if (INTERVIEWER_ROLE[guildType] != "" && !message.member.roles.map(x=>x.id).includes(INTERVIEWER_ROLE[guildType])) {
+  if (INTERVIEWER_ROLE != "" && !message.member.roles.map(x=>x.id).includes(INTERVIEWER_ROLE)) {
     message.reply("Only interviewers can run this command");
     return;
   }
@@ -110,12 +116,12 @@ registerCommand("interview", (message, param) => {
     return;
   }
   message.reply("This would open and interview for " + user.tag + ", appying for " + roles.map(x=>x.name).join(", "));
-  var category = message.guild.channels.get(INTERVIEW_CATEGORY[guildType]);
+  var category = message.guild.channels.get(INTERVIEW_CATEGORY);
 
   message.guild.createChannel(user.tag,"text",category.permissionOverwrites.array()).then(channel=>{
     user.send("Thanks for your application to TumbleCraft or Tumble Network. We were impressed by your background and would like to invite you to interview in this channel (" + channel.toString() + ") to tell you a little more about the (**" + roles.map(x=>x.name).join("**, **") + "**) position and get to know you better.");
-    message.guild.members.get(user.id).addRole(INTERVIEWEE_ROLE[guildType]);
-    channel.setParent(INTERVIEW_CATEGORY[guildType]);
+    message.guild.members.get(user.id).addRole(INTERVIEWEE_ROLE);
+    channel.setParent(INTERVIEW_CATEGORY);
     channel.setTopic("Applying for " + roles.map(x=>x.name).join(", ") + " | " + user.id + ":" + roles.map(x=>x.id).join(":"));
     channel.overwritePermissions(user, {
       VIEW_CHANNEL: true
@@ -126,11 +132,14 @@ registerCommand("interview", (message, param) => {
 
 registerCommand("accept", (message, param) => {
   var guildType = ALLOWED_GUILDS.indexOf(message.guild.id);
-  if (INTERVIEWER_ROLE[guildType] != "" && !message.member.roles.map(x=>x.id).includes(INTERVIEWER_ROLE[guildType])) {
+    if (guildType != GUILD.TUMBLE_NETWORK) {
+      return;
+    }
+  if (INTERVIEWER_ROLE != "" && !message.member.roles.map(x=>x.id).includes(INTERVIEWER_ROLE)) {
     message.reply("Only interviewers can run this command");
     return;
   }
-  if (message.channel.parent.id != INTERVIEW_CATEGORY[guildType]) {
+  if (message.channel.parent.id != INTERVIEW_CATEGORY) {
     message.reply("This is not an interview");
     return;
   }
@@ -155,23 +164,26 @@ registerCommand("accept", (message, param) => {
     Log.SendUpdate(message.guild,"Interview for " + interview.user.user.toString() + ", applying for " + interview.roles.map(x=>x.toString()).join(", ") + ", has been closed: " + message.channel.toString(),interview.user, interview.roles[0]);
     message.channel.delete();
   }
-  interview.user.send("Your application for " + roleAcceped.name + " has been accepted. Welcome to the team. https://discord.gg/EJ4TjaK");
+  interview.user.send("Your application for " + roleAcceped.name + " has been accepted. Welcome to the team. https://discord.gg/Bv3QRXa");
   message.member.send("You have accepted " + interview.user.displayName + " as a " + roleAcceped.name);
   Log.SendUpdate(message.guild,"Application for " + interview.user.user.toString() + ", applying for " + roleAcceped.toString() + ", has been accepted:", interview.user, roleAcceped);
   interview.user.addRole(roleAcceped.id);
-  interview.user.removeRole(INTERVIEWEE_ROLE[guildType]);
-  if (STAFF_ROLES[guildType].includes(roleAcceped)) {
-    interview.user.addRole(STAFF_ROLE[guildType]);
+  interview.user.removeRole(INTERVIEWEE_ROLE);
+  if (STAFF_ROLES.includes(roleAcceped)) {
+    interview.user.addRole(STAFF_ROLE);
   }
 });
 
 registerCommand("deny", (message, param) => {
   var guildType = ALLOWED_GUILDS.indexOf(message.guild.id);
-  if (INTERVIEWER_ROLE[guildType] != "" && !message.member.roles.map(x=>x.id).includes(INTERVIEWER_ROLE[guildType])) {
+  if (guildType != GUILD.TUMBLE_NETWORK) {
+    return;
+  }
+  if (INTERVIEWER_ROLE != "" && !message.member.roles.map(x=>x.id).includes(INTERVIEWER_ROLE)) {
     message.reply("Only interviewers can run this command");
     return;
   }
-  if (message.channel.parent.id != INTERVIEW_CATEGORY[guildType]) {
+  if (message.channel.parent.id != INTERVIEW_CATEGORY) {
     message.reply("This is not an interview");
     return;
   }
@@ -200,7 +212,7 @@ registerCommand("deny", (message, param) => {
     Log.SendUpdate(message.guild,"Interview for " + interview.user.user.toString() + ", applying for " + interview.roles.map(x=>x.toString()).join(", ") + ", has been closed: " + message.channel.toString(),interview.user,interview.roles[0]);
     message.channel.delete();
   }
-  interview.user.removeRole(INTERVIEWEE_ROLE[guildType]);
+  interview.user.removeRole(INTERVIEWEE_ROLE);
   interview.user.send("We are sorry, your application for **" + roleDenyed.name + "** has unfortunately been denied. Thank you for your interest, and enjoy the server.");
   message.member.send("You have denied " + interview.user.toString() + " as a **" + roleDenyed.name + "**");
   Log.SendUpdate(message.guild,"Application for " + interview.user.user.toString() + ", applying for " + roleDenyed.toString() + ", has been denied",interview.user,roleDenyed);
@@ -209,6 +221,7 @@ registerCommand("deny", (message, param) => {
 client.on('ready', () => {
   console.log('I am ready!');
   ME_ID = client.user.id;
+  //TimeZones.UpdateTimes(client);
   client.guilds.forEach(guild =>{
     if (ALLOWED_GUILDS.includes(guild.id)) {
       return;
@@ -237,6 +250,21 @@ client.on('message', message => {
     return;
   }
   if (message.member == message.guild.me) {
+    return;
+  }
+  if (message.channel.id == TimeZones.WHAT_TIME_ID) {
+    try {
+      //TimeZones.GetTimeZone(message);
+    } catch (e) {
+      message.reply({
+        embed:{
+          description:"" + e
+        }
+      })
+    } finally {
+
+    }
+    message.delete();
     return;
   }
   if (message.content.charAt(0) == COMMAND_PREFIX) {

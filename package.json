@@ -11,6 +11,7 @@
   "repository": "tumblenet/TumbleNet-Discord-Node",
   "dependencies": {
     "discord.js": "^11.3.2",
+    "moment-timezone": "^0.5.17",
     "webserver-log": "github:tumblenet/webserver-log"
   }
 }
