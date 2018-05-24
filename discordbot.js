@@ -166,7 +166,7 @@ registerCommand("accept", (message, param) => {
   }
   interview.user.send("Your application for " + roleAcceped.name + " has been accepted. Welcome to the team. https://discord.gg/Bv3QRXa");
   message.member.send("You have accepted " + interview.user.displayName + " as a " + roleAcceped.name);
-  Log.SendUpdate(message.guild,"Application for " + interview.user.user.toString() + ", applying for " + roleAcceped.toString() + ", has been accepted:", interview.user, roleAcceped);
+  Log.SendUpdate(message.guild,"Application for " + interview.user.user.toString() + ", applying for " + roleAcceped.toString() + ", has been accepted:", interview.user.user, roleAcceped);
   interview.user.addRole(roleAcceped.id);
   interview.user.removeRole(INTERVIEWEE_ROLE);
   if (STAFF_ROLES.includes(roleAcceped)) {
@@ -215,7 +215,7 @@ registerCommand("deny", (message, param) => {
   interview.user.removeRole(INTERVIEWEE_ROLE);
   interview.user.send("We are sorry, your application for **" + roleDenyed.name + "** has unfortunately been denied. Thank you for your interest, and enjoy the server.");
   message.member.send("You have denied " + interview.user.toString() + " as a **" + roleDenyed.name + "**");
-  Log.SendUpdate(message.guild,"Application for " + interview.user.user.toString() + ", applying for " + roleDenyed.toString() + ", has been denied",interview.user,roleDenyed);
+  Log.SendUpdate(message.guild,"Application for " + interview.user.user.toString() + ", applying for " + roleDenyed.toString() + ", has been denied",interview.user.user,roleDenyed);
 });
 
 client.on('ready', () => {
