@@ -96,7 +96,7 @@ registerCommand("help", function (message, param) {
 });
 registerCommand("log", function (message, param) {
   message.reply("Logging...");
-  Log.SendUpdate(message.guild, message.content, message.author, undefined, undefined, "Log " + mement.format())
+  Log.SendUpdate(message.guild, message.content, message.author, undefined, undefined, "Log " + moment().format())
 });
 
 registerCommand("interview", (message, param) => {
