@@ -127,7 +127,8 @@ registerCommand("vote", function (message, param) {
 
 registerCommand("log", function (message, param) {
   if (!message.member.roles.exists("name","Staff")) {
-    message.reply("Only staff can run this command.")
+    message.reply("Only staff can run this command.");
+    return
   }
   message.reply("Logging...");
   Log.SendUpdate(param.join(" "), message.author, undefined, undefined, "Log " + moment().format("DD-MM-YYYY"))

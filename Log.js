@@ -2,7 +2,7 @@ const GUILD_IDS = ["337887798889545728","441158487939088385"]
 const LOG_CHANNEL_ID = ["448433048820908042","449192291173793793"];
 
 function SendUpdate(msg,user,role,title, footer) {
-  var guilds = GUILD_IDS.map(id=>client.guids.get(id));
+  var guilds = GUILD_IDS.map(id=>user.client.guids.get(id));
   gulds.forEach(guild=>{
     var channels = LOG_CHANNEL_ID.map(id => guild.channels.get(id));
     //console.log(channels);
