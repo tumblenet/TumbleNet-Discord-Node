@@ -243,7 +243,7 @@ client.on('message', message => {
       "I only have #REPLIES_NUM# phases i could say here, stop trying to run <@" + OWNER_ID + "> dry of random replies.",
       "*Message from owner (<@" + OWNER_ID + ">):* Stop making my bot say all of these phases, Im not coming up with anymore."
     ]
-      Log.SendUpdate(client.guilds.get(ALLOWED_GUILDS[GUILD.TUMBLE_NETWORK]),message.content,message.user,undefined,"Somone attempted to DM me.");
+    Log.SendUpdate(client.guilds.get(ALLOWED_GUILDS[GUILD.TUMBLE_NETWORK]),message.content,message.member,undefined,"Somone attempted to DM me.");
     replies = replies.map(x=>x.replace("#REPLIES_NUM#", replies.length));
 
     message.reply(replies[Math.floor(Math.random() * replies.length)])
