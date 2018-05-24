@@ -117,12 +117,20 @@ registerCommand("say", function (message, param) {
 registerCommand("help", function (message, param) {
   message.channel.send("**Commands**\n```" + GetCommandList() + "```");
 });
-registerCommand("log", function (message, param) {
-  if (message.member.roles.map(i=>i.id).includes(STAFF_ROLE)) {
 
+registerCommand("apply", function (message, param) {
+  message.reply("Apply here: http://tumblecraft.tumblenet.ga/apply/");
+});
+registerCommand("vote", function (message, param) {
+  message.reply("Vote here: http://tumblecraft.tumblenet.ga/vote/");
+});
+
+registerCommand("log", function (message, param) {
+  if (!message.member.roles.exists("name","Staff")) {
+    message.reply("Only staff can run this command.")
   }
   message.reply("Logging...");
-  Log.SendUpdate(message.guild, param.join(" "), message.author, undefined, undefined, "Log " + moment().format("DD-MM-YYYY"))
+  Log.SendUpdate(param.join(" "), message.author, undefined, undefined, "Log " + moment().format("DD-MM-YYYY"))
 });
 
 registerCommand("syncroles", function (message, param) {
@@ -164,7 +172,7 @@ registerCommand("interview", (message, param) => {
     channel.overwritePermissions(user, {
       VIEW_CHANNEL: true
     });
-    Log.SendUpdate(message.guild,"Interview for " + user.toString() + ", applying for " + roles.map(x=>x.toString()).join(", ") + ", has been opened: " + channel.toString(),user,roles.first(1)[0]);
+    Log.SendUpdate("Interview for " + user.toString() + ", applying for " + roles.map(x=>x.toString()).join(", ") + ", has been opened: " + channel.toString(),user,roles.first(1)[0]);
   }).catch(console.error);
 });
 
@@ -199,12 +207,12 @@ registerCommand("accept", (message, param) => {
     message.channel.setTopic("Applying for " + interview.roles.map(x=>x.name).join(", ") + " | " + interview.user.id + ":" + interview.roles.map(x=>x.id).join(":"));
   } else {
     roleAcceped = interview.roles[0];
-    Log.SendUpdate(message.guild,"Interview for " + interview.user.user.toString() + ", applying for " + interview.roles.map(x=>x.toString()).join(", ") + ", has been closed: " + message.channel.toString(),interview.user, interview.roles[0]);
+    Log.SendUpdate("Interview for " + interview.user.user.toString() + ", applying for " + interview.roles.map(x=>x.toString()).join(", ") + ", has been closed: " + message.channel.toString(),interview.user, interview.roles[0]);
     message.channel.delete();
   }
   interview.user.send("Your application for " + roleAcceped.name + " has been accepted. Welcome to the team. https://discord.gg/Bv3QRXa");
   message.member.send("You have accepted " + interview.user.displayName + " as a " + roleAcceped.name);
-  Log.SendUpdate(message.guild,"Application for " + interview.user.user.toString() + ", applying for " + roleAcceped.toString() + ", has been accepted:", interview.user.user, roleAcceped);
+  Log.SendUpdate("Application for " + interview.user.user.toString() + ", applying for " + roleAcceped.toString() + ", has been accepted:", interview.user.user, roleAcceped);
   interview.user.addRole(roleAcceped.id);
   interview.user.removeRole(INTERVIEWEE_ROLE);
   if (STAFF_ROLES.includes(roleAcceped.id)) {
@@ -248,13 +256,13 @@ registerCommand("deny", (message, param) => {
     message.channel.setTopic("Applying for " + interview.roles.map(x=>x.name).join(", ") + " | " + interview.user.id + ":" + interview.roles.map(x=>x.id).join(":"));
   } else {
     roleDenyed = interview.roles[0];
-    Log.SendUpdate(message.guild,"Interview for " + interview.user.user.toString() + ", applying for " + interview.roles.map(x=>x.toString()).join(", ") + ", has been closed: " + message.channel.toString(),interview.user,interview.roles[0]);
+    Log.SendUpdate("Interview for " + interview.user.user.toString() + ", applying for " + interview.roles.map(x=>x.toString()).join(", ") + ", has been closed: " + message.channel.toString(),interview.user,interview.roles[0]);
     message.channel.delete();
   }
   interview.user.removeRole(INTERVIEWEE_ROLE);
   interview.user.send("We are sorry, your application for **" + roleDenyed.name + "** has unfortunately been denied. Thank you for your interest, and enjoy the server.");
   message.member.send("You have denied " + interview.user.toString() + " as a **" + roleDenyed.name + "**");
-  Log.SendUpdate(message.guild,"Application for " + interview.user.user.toString() + ", applying for " + roleDenyed.toString() + ", has been denied",interview.user.user,roleDenyed);
+  Log.SendUpdate("Application for " + interview.user.user.toString() + ", applying for " + roleDenyed.toString() + ", has been denied",interview.user.user,roleDenyed);
 });
 
 client.on('ready', () => {
@@ -294,7 +302,7 @@ client.on('message', message => {
       "I only have #REPLIES_NUM# phases i could say here, stop trying to run <@" + OWNER_ID + "> dry of random replies.",
       "*Message from owner (<@" + OWNER_ID + ">):* Stop making my bot say all of these phases, Im not coming up with anymore."
     ]
-    Log.SendUpdate(client.guilds.get(ALLOWED_GUILDS[GUILD.TUMBLE_NETWORK]),message.content,message.author,undefined,undefined,"Direct Messafge");
+    Log.SendUpdate(message.content,message.author,undefined,undefined,"Direct Message");
     replies = replies.map(x=>x.replace("#REPLIES_NUM#", replies.length));
 
     message.reply(replies[Math.floor(Math.random() * replies.length)])
