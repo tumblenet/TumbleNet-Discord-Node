@@ -28,6 +28,7 @@ const STAFF_ROLES = [
   "447048289326727177",//World Painter
   "447048623671214080",//StoryWiter
   "447048965179965450",//3dMolder
+  "449160835936288778",//Artist
   "447049362674024458",//Developer
   "447044657877090304",//Admin
   "447044714110255114",//Mod
@@ -293,7 +294,7 @@ client.on('message', message => {
       "I only have #REPLIES_NUM# phases i could say here, stop trying to run <@" + OWNER_ID + "> dry of random replies.",
       "*Message from owner (<@" + OWNER_ID + ">):* Stop making my bot say all of these phases, Im not coming up with anymore."
     ]
-    Log.SendUpdate(client.guilds.get(ALLOWED_GUILDS[GUILD.TUMBLE_NETWORK]),message.content,message.author,undefined,"Somone attempted to DM me.");
+    Log.SendUpdate(client.guilds.get(ALLOWED_GUILDS[GUILD.TUMBLE_NETWORK]),message.content,message.author,undefined,undefined,"Direct Messafge");
     replies = replies.map(x=>x.replace("#REPLIES_NUM#", replies.length));
 
     message.reply(replies[Math.floor(Math.random() * replies.length)])

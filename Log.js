@@ -17,7 +17,7 @@ function SendUpdate(guild, msg,user,role,title, footer) {
         icon_url: user.avatarURL
       },
       title: title,
-      footer: {text:footer,icon_url:guild.client.user.displayAvatarURL},
+      footer: {text:footer,icon_url:undefined},
       color: role.color,
       description: msg,
       fields: []
