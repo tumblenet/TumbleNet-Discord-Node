@@ -126,7 +126,7 @@ registerCommand("interview", (message, param) => {
     channel.overwritePermissions(user, {
       VIEW_CHANNEL: true
     });
-    Log.SendUpdate(message.guild,"Interview for " + user.toString() + ", applying for " + roles.map(x=>x.toString()).join(", ") + ", has been opened: " + channel.toString(),user,role.first(1)[0]);
+    Log.SendUpdate(message.guild,"Interview for " + user.toString() + ", applying for " + roles.map(x=>x.toString()).join(", ") + ", has been opened: " + channel.toString(),user,roles.first(1)[0]);
   }).catch(console.error);
 });
 
