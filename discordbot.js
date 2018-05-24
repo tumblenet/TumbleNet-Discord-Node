@@ -267,6 +267,9 @@ client.on('message', message => {
   //   message.delete();
   //   return;
   // }
+  if (message.content.charAt(0) == "!") {
+    message.reply("Prefix changed to `/`")
+  }
   if (message.content.charAt(0) == COMMAND_PREFIX) {
     if (MAINTENANCE) {
       message.reply("Sorry, I am under maintenance at the moment. Please ask <@336869008148135948> for more details.");
