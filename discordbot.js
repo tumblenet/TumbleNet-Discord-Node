@@ -226,6 +226,9 @@ registerCommand("deny", (message, param) => {
 client.on('ready', () => {
   console.log('I am ready!');
   ME_ID = client.user.id;
+  if (client.user.tag == "TumbleNetTest#1534") {
+    COMMAND_PREFIX = "t" + COMMAND_PREFIX
+  }
   //TimeZones.UpdateTimes(client);
   client.guilds.forEach(guild =>{
     if (ALLOWED_GUILDS.includes(guild.id)) {
