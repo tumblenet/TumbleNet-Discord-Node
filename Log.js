@@ -2,8 +2,12 @@
 const LOG_CHANNEL_ID = ["448433048820908042","449192291173793793"];
 
 function SendUpdate(guild, msg,user,role,title, footer) {
-  var channels = LOG_CHANNEL_ID.map(item => guild.channels.get(item));
-  channels.forEach(channel=>{
+  var channels = LOG_CHANNEL_ID.map(id => guild.channels.get(id));
+  console.log(channels);
+  channels.forEach(channel => {
+    if (channel == undefined) {
+      return;
+    }
     if (role == undefined) {
       role = guild.me.roles.first(1)[0];
     }
@@ -13,7 +17,7 @@ function SendUpdate(guild, msg,user,role,title, footer) {
         icon_url: user.avatarURL
       },
       title: title,
-      footer: footer,
+      footer: {text:footer,icon_url:guild.client.user.displayAvatarURL},
       color: role.color,
       description: msg,
       fields: []

@@ -11,12 +11,13 @@ const Log = require('./Log.js');
 const MAINTENANCE = false;
 var ME_ID = undefined;
 const OWNER_ID = "336869008148135948";
-const COMMAND_PREFIX = "/";
+var COMMAND_PREFIX = "/";
 const ALLOWED_GUILDS = ["337887798889545728","446981442443149312","379672971112873984","441158487939088385"];
 const GUILD = {
   TUMBLE_NETWORK:0,
   TUMBLES_BOTS:1,
-  DISCORD_TESTING:2
+  DISCORD_TESTING:2,
+  TUMBLE_CRAFT_BETA:3
 }
 const INTERVIEW_CATEGORY = "437378162658115585";
 const INTERVIEWER_ROLE = "447045670126485505";
@@ -73,6 +74,27 @@ function GetInterviewInfo(message) {
   };
 }
 
+function SyncRoles(member,callback=function () {}) {
+  if (member.guild.id == ALLOWED_GUILDS[GUILD.TUMBLE_CRAFT_BETA]) {
+    var tnEquiv = client.guilds.get(ALLOWED_GUILDS[GUILD.TUMBLE_NETWORK]).members.get(member.user.id);
+    if (tnEquiv != undefined) {
+      var rolesSynced = [];
+      member.setNickname(tnEquiv.displayName);
+      tnEquiv.roles.map(role=>member.guild.roles.find("name",role.name)).forEach((role,index,array)=>{
+        if (role == null) {
+          return;
+        }
+        member.addRole(role.id);
+        rolesSynced.push(role.name);
+        console.log(role.name);
+        if (index = array.length-1) {
+          callback(rolesSynced);
+        }
+      });
+    }
+  }
+}
+
 registerCommand("ping",function (message, param) {
   message.channel.send('pong');
 });
@@ -95,8 +117,18 @@ registerCommand("help", function (message, param) {
   message.channel.send("**Commands**\n```" + GetCommandList() + "```");
 });
 registerCommand("log", function (message, param) {
+  if (message.member.roles.map(i=>i.id).includes(STAFF_ROLE)) {
+
+  }
   message.reply("Logging...");
-  Log.SendUpdate(message.guild, message.content, message.author, undefined, undefined, "Log " + moment().format())
+  Log.SendUpdate(message.guild, param.join(" "), message.author, undefined, undefined, "Log " + moment().format("DD-MM-YYYY"))
+});
+
+registerCommand("syncroles", function (message, param) {
+  message.channel.send("Syncing roles...");
+  SyncRoles(message.member,function (roles) {
+    message.channel.send("```\n" + roles.join("\n") + "\n```")
+  })
 });
 
 registerCommand("interview", (message, param) => {
@@ -174,8 +206,9 @@ registerCommand("accept", (message, param) => {
   Log.SendUpdate(message.guild,"Application for " + interview.user.user.toString() + ", applying for " + roleAcceped.toString() + ", has been accepted:", interview.user.user, roleAcceped);
   interview.user.addRole(roleAcceped.id);
   interview.user.removeRole(INTERVIEWEE_ROLE);
-  if (STAFF_ROLES.includes(roleAcceped)) {
+  if (STAFF_ROLES.includes(roleAcceped.id)) {
     interview.user.addRole(STAFF_ROLE);
+    client.guilds.get(ALLOWED_GUILDS[GUILD.TUMBLE_CRAFT_BETA]).members.get(interview.user.user.id).addRole
   }
 });
 
@@ -231,11 +264,20 @@ client.on('ready', () => {
   }
   //TimeZones.UpdateTimes(client);
   client.guilds.forEach(guild =>{
-    if (ALLOWED_GUILDS.includes(guild.id)) {
+    if (!ALLOWED_GUILDS.includes(guild.id)) {
+      guild.leave();
       return;
     }
-    guild.leave();
+    if (guild.id == ALLOWED_GUILDS[GUILD.TUMBLE_CRAFT_BETA]) {
+      guild.members.array().forEach(member => {
+        SyncRoles(member);
+      });
+    }
   });
+});
+
+client.on("guildMemberAdd", member =>{
+  SyncRoles(member);
 });
 
 client.on('message', message => {
@@ -275,10 +317,10 @@ client.on('message', message => {
   //   message.delete();
   //   return;
   // }
-  if (message.content.charAt(0) == "!") {
+  if (message.content.startsWith("!")) {
     message.reply("Prefix changed to `/`")
   }
-  if (message.content.charAt(0) == COMMAND_PREFIX) {
+  if (message.content.startsWith(COMMAND_PREFIX)) {
     if (MAINTENANCE) {
       message.reply("Sorry, I am under maintenance at the moment. Please ask <@336869008148135948> for more details.");
       return;
@@ -293,7 +335,7 @@ client.on('message', message => {
     function commandExecuter(command,message) {
       var output = true;
       try {
-        output = command.execute(message);
+        output = command.execute(COMMAND_PREFIX,message);
       } catch (e) {
         //output = false;
         message.reply("There was an error running that command.",{

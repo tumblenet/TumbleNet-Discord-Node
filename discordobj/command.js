@@ -21,12 +21,12 @@ DiscordCommand.prototype.removeUser = function (id) {
   }
 };
 
-DiscordCommand.prototype.execute = function (message) {
+DiscordCommand.prototype.execute = function (prefix,message) {
   var usercommand = message.content.split(" ");
   if (this.whitelist || this.users.includes(message.member)) {
 
   }
-  if (this.alias.includes(usercommand[0].substr(1))) {
+  if (this.alias.includes(usercommand[0].substr(prefix.length))) {
     usercommand.shift();
 
     this.cmdevent(message, usercommand);
