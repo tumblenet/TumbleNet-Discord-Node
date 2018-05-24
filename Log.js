@@ -9,7 +9,7 @@ function SendUpdate(guild, msg,user,role,title) {
   var embed = {
     author: {
       name: user.username,
-      icon_url: client.user.avatarURL
+      icon_url: user.avatarURL
     },
     title: title || "",
     color: role.color,
