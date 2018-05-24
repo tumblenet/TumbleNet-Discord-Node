@@ -1,5 +1,6 @@
 const Discord = require('discord.js');
 const client = new Discord.Client();
+const moment = require('moment-timezone');
 
 const DiscordOBJ = require('./discordobj');
 const DiscordCommand = DiscordOBJ("command");
@@ -92,6 +93,10 @@ registerCommand("say", function (message, param) {
 
 registerCommand("help", function (message, param) {
   message.channel.send("**Commands**\n```" + GetCommandList() + "```");
+});
+registerCommand("log", function (message, param) {
+  message.reply("Logging...");
+  Log.SendUpdate(message.guild, message.content, mesage.author, undefined, undefined, "Log " + mement.format())
 });
 
 registerCommand("interview", (message, param) => {
