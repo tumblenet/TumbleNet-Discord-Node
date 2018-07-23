@@ -101,17 +101,30 @@ registerCommand("ping",function (message, param) {
 });
 
 registerCommand("say", function (message, param) {
-  console.log(message);
-  var files = message.attachments.map(x=>x.url);
-  message.delete();
-  var messageOptions = {
-    tts:message.tts,
-    nonce:message.nounce,
-    embed:message.embeds,
-    files:files,
-    split:true
-  }
-  message.channel.send(param.join(" "),messageOptions);
+  var done = false;
+  STAFF_ROLES.forEach(staffRole=>{
+    if (done) {
+      return;
+    }
+    if (staffRole != "" && !message.member.roles.map(x=>x.id).includes(staffRole)) {
+      message.reply("Only staff members can run this command");
+      done = true;
+      return;
+    }
+    console.log(message);
+    var files = message.attachments.map(x=>x.url);
+    message.delete();
+    var messageOptions = {
+      tts:message.tts,
+      nonce:message.nounce,
+      embed:message.embeds,
+      files:files,
+      split:true
+    }
+    message.channel.send(param.join(" "),messageOptions);
+    done = true;
+  })
+
 });
 
 registerCommand("help", function (message, param) {
